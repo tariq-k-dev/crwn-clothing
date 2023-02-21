@@ -5,7 +5,9 @@
 }
 
 body {
-  font-family: Verdana, Arial, sans-serif, sans-serif;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 10px;
+  padding: 1rem;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -13,4 +15,14 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+h1 {
+  font-size: 2rem;
+  margin: 0 0 1rem;
+}
+
+a {
+  color: rgba(0, 0, 0, 1);
+  text-decoration: none;
 }
