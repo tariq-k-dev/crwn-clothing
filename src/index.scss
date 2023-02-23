@@ -4,9 +4,13 @@
   padding: 0;
 }
 
+html {
+  font-size: 62.5%;
+}
+
 body {
   font-family: 'Montserrat', sans-serif;
-  font-size: 10px;
+  font-size: 1.6rem;
   padding: 1rem;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
