@@ -139,7 +139,7 @@ const SignUpForm = () => {
 
   return (
     <div className='sign-up-container'>
-      <h2>Don't have anaccount?</h2>
+      <h2>I do not have an account</h2>
       <span>Sign Up with Email and Password</span>
       <form method='post' onSubmit={handleSubmit}>
         <FormInput
