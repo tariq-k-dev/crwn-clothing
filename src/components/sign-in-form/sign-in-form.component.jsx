@@ -3,29 +3,25 @@ import { useState, useEffect, useCallback } from 'react';
 import FormInput from '../../components/form-input/form-input.component';
 import Button from '../button/button.component';
 
-import './sign-up-form.styles.scss';
+import './sign-in-form.styles.scss';
 
 import {
-  createAuthUserWithEmailAndPassword,
+  signInWithGooglePopup,
+  signInAuthWithEmailAndPassword,
   createUserDocumentFromAuth,
 } from '../../utils/firebase/firebase.utils';
 
 const defaultFormFields = {
-  displayName: '',
   email: '',
   password: '',
-  confirmPassword: '',
 };
 const emailRegex =
   /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
-const SignUpForm = () => {
+const SignInForm = () => {
   const [formFields, setFormFields] = useState(defaultFormFields);
-  const [displayNameError, setDisplayNameError] = useState(false);
   const [emailError, setEmailError] = useState(false);
   const [passwordError, setPasswordError] = useState(false);
-  const [confirmPasswordError, setConfirmPasswordError] = useState(false);
-  const [samePasswordsError, setSamePasswordsError] = useState(false);
   const [formError, setFormError] = useState('');
   const [formSuccess, setFormSuccess] = useState({
     displayName: '',
@@ -33,13 +29,7 @@ const SignUpForm = () => {
     message: '',
   });
   const [isFormValid, setIsFormValid] = useState(false);
-  const { displayName, email, password, confirmPassword } = formFields;
-
-  const validateDisplayName = () => {
-    if (displayName.length < 2) {
-      setDisplayNameError(true);
-    }
-  };
+  const { email, password } = formFields;
 
   const validateEmail = () => {
     if (!email.match(emailRegex)) {
@@ -53,29 +43,13 @@ const SignUpForm = () => {
     }
   };
 
-  const validateConfirmPassword = () => {
-    if (confirmPassword.length < 6) {
-      setConfirmPasswordError(true);
-    }
-  };
-
   const validateForm = useCallback(() => {
     let isValid = false;
     const formValidation = {
-      displayNameValid: false,
       emailValid: false,
       passwordValid: false,
-      confirmPasswordValid: false,
-      samePasswords: false,
     };
 
-    if (displayName.length >= 2) {
-      setDisplayNameError(false);
-      formValidation.displayNameValid = true;
-    } else if (displayName.length > 0 && displayName.length < 2) {
-      setDisplayNameError(true);
-      formValidation.displayName = false;
-    }
     if (email.match(emailRegex)) {
       setFormError('');
       setEmailError(false);
@@ -87,33 +61,21 @@ const SignUpForm = () => {
     if (password.length >= 6) {
       setPasswordError(false);
       formValidation.passwordValid = true;
-    } else if (password.length > 4 && password.length < 6) {
+    } else if (password.length === 5) {
       setPasswordError(true);
       formValidation.passwordValid = false;
-    }
-    if (confirmPassword.length >= 6) {
-      setConfirmPasswordError(false);
-      formValidation.confirmPasswordValid = true;
-    } else if (confirmPassword.length > 4 && confirmPassword.length < 6) {
-      setConfirmPasswordError(true);
-      formValidation.confirmPasswordValid = false;
-    }
-    if (confirmPassword.length >= 6 && password === confirmPassword) {
-      setSamePasswordsError(false);
-      formValidation.samePasswords = true;
-    } else if (confirmPassword.length >= 6 && password !== confirmPassword) {
-      setSamePasswordsError(true);
-      formValidation.samePasswords = false;
     }
 
     isValid = Object.values(formValidation).every(item => item === true);
 
     return isValid;
-  }, [displayName, email, password, confirmPassword]);
+  }, [email, password]);
 
   const resetForm = () => {
     setFormFields(defaultFormFields);
     setIsFormValid(false);
+    setEmailError(false);
+    setPasswordError(false);
   };
 
   const handleChange = event => {
@@ -122,33 +84,60 @@ const SignUpForm = () => {
     setFormFields({ ...formFields, [name]: value });
   };
 
-  const handleSubmit = async event => {
-    event.preventDefault();
+  const signInWithGoogle = async () => {
+    setFormError('');
+    resetForm();
 
-    const { displayName, email, password, confirmPassword } = formFields;
+    const { user } = await signInWithGooglePopup();
+    await createUserDocumentFromAuth(user);
 
-    if (password !== confirmPassword) return;
-
-    try {
-      const { user } = await createAuthUserWithEmailAndPassword(
-        email,
-        password
-      );
-
-      await createUserDocumentFromAuth({ ...user, displayName });
+    if (user) {
+      const { displayName, email } = user;
       setFormSuccess({
         displayName: displayName,
         email: email,
-        message: 'Successfully registered!',
+        message: 'Successfully logged in!',
       });
+    } else {
+      setFormError('*** Unable to sign in ***');
+    }
+  };
+
+  const handleSubmit = async event => {
+    event.preventDefault();
+
+    setFormError('');
+
+    const { email, password } = formFields;
+
+    try {
+      const user = await signInAuthWithEmailAndPassword(email, password);
+
+      if (user) {
+        const { displayName, email } = user;
+        setFormSuccess({
+          displayName: displayName,
+          email: email,
+          message: 'Successfully logged in!',
+        });
+      }
     } catch (error) {
-      if (error.code === 'auth/email-already-in-use') {
-        setFormError('User is already registered');
-      } else {
-        setFormError('Unable to comlete sign up with email and password');
+      switch (error.code) {
+        case 'auth/wrong-password':
+          setFormError('*** Incorrect password for email ***');
+          break;
+        case 'auth/user-not-found':
+          setFormError('*** Not a registered user ***');
+          break;
+        default:
+          console.error(error);
       }
     } finally {
       resetForm();
+
+      setTimeout(() => {
+        window.location.href = '/shop';
+      }, 3000);
     }
   };
 
@@ -157,29 +146,18 @@ const SignUpForm = () => {
   }, [validateForm, isFormValid]);
 
   return (
-    <div className='sign-up-container'>
-      <h2>Don't have an account?</h2>
-      <span>Sign up with your email and password</span>
+    <div className='sign-in-container'>
+      <h2>Already have an account?</h2>
+      <span>Sign in with your email and password</span>
       <form method='post' onSubmit={handleSubmit}>
-        <FormInput
-          htmlFor='displayName'
-          label='Display Name'
-          type='text'
-          name='displayName'
-          value={displayName}
-          onChange={handleChange}
-          onBlur={validateDisplayName}
-          min='2'
-          required
-        />
         <FormInput
           htmlFor='email'
           label='Email'
           type='email'
           name='email'
+          value={email}
           onChange={handleChange}
           onBlur={validateEmail}
-          value={email}
           required
         />
         <FormInput
@@ -193,27 +171,16 @@ const SignUpForm = () => {
           min='6'
           required
         />
-        <FormInput
-          htmlFor='confirmPassword'
-          label='Confirm Password'
-          type='password'
-          name='confirmPassword'
-          value={confirmPassword}
-          onChange={handleChange}
-          onBlur={validateConfirmPassword}
-          min='6'
-          required
-        />
-        <Button type='submit' disabled={!isFormValid}>
-          Sign Up
-        </Button>
+        <div className='buttons-container'>
+          <Button type='submit' disabled={!isFormValid}>
+            SIGN IN
+          </Button>
+          <Button type='button' buttonType='google' onClick={signInWithGoogle}>
+            SIGN IN WITH GOOGLE
+          </Button>
+        </div>
         <div className='messages'>
           <div className='warning'>
-            {displayNameError ? (
-              <span className='error'>
-                &#9888;&ensp;Display name must be at least 2 characters
-              </span>
-            ) : null}
             {emailError ? (
               <span className='error'>
                 &#9888;&ensp;Invalid email. Must be in the form of:
@@ -225,14 +192,6 @@ const SignUpForm = () => {
               <span className='error'>
                 &#9888;&ensp;Password must be at least 6 characters
               </span>
-            ) : null}
-            {confirmPasswordError ? (
-              <span className='error'>
-                &#9888;&ensp;Confirm password must be at least 6 characters
-              </span>
-            ) : null}
-            {samePasswordsError ? (
-              <span className='error'>&#9888;&ensp;Passwords do not match</span>
             ) : null}
           </div>
           {formError ? (
@@ -269,4 +228,4 @@ const SignUpForm = () => {
   );
 };
 
-export default SignUpForm;
+export default SignInForm;

@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase/app';
 import {
   getAuth,
   signInWithPopup,
+  signInWithEmailAndPassword,
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
 } from 'firebase/auth';
@@ -29,6 +30,38 @@ export const auth = getAuth();
 export const signInWithGooglePopup = () =>
   signInWithPopup(auth, googleProvider);
 
+// Sign in with email and password
+export const signInAuthWithEmailAndPassword = async (email, password) => {
+  if (!email || !password) return;
+
+  try {
+    const userCredential = await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+
+    // Signed in
+    const { uid } = userCredential.user;
+
+    const docRef = doc(db, 'users', uid);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      const userRecord = docSnap.data();
+
+      return userRecord;
+    } else {
+      console.log('No such document!');
+    }
+  } catch (error) {
+    // const errorCode = error.code;
+    // const errorMessage = error.message;
+
+    // console.error(`${errorCode}: ${errorMessage}`);
+    throw error;
+  }
+};
 // Firestore DB
 export const db = getFirestore();
 export const createUserDocumentFromAuth = async userAuth => {
