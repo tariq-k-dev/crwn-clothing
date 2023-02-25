@@ -6,7 +6,9 @@ import Authentication from './routes/authentication/authentication.component';
 
 import './app.styles.scss';
 
-const Shop = () => <h1>Shop Page</h1>;
+const Shop = () => {
+  return <h1>Shop Page</h1>;
+};
 
 const App = () => (
   <Routes>

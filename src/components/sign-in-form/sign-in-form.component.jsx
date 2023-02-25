@@ -8,7 +8,6 @@ import './sign-in-form.styles.scss';
 import {
   signInWithGooglePopup,
   signInAuthWithEmailAndPassword,
-  createUserDocumentFromAuth,
 } from '../../utils/firebase/firebase.utils';
 
 const defaultFormFields = {
@@ -61,7 +60,7 @@ const SignInForm = () => {
     if (password.length >= 6) {
       setPasswordError(false);
       formValidation.passwordValid = true;
-    } else if (password.length === 5) {
+    } else if (password.length > 2 && password.length < 6) {
       setPasswordError(true);
       formValidation.passwordValid = false;
     }
@@ -89,7 +88,6 @@ const SignInForm = () => {
     resetForm();
 
     const { user } = await signInWithGooglePopup();
-    await createUserDocumentFromAuth(user);
 
     if (user) {
       const { displayName, email } = user;
@@ -115,6 +113,7 @@ const SignInForm = () => {
 
       if (user) {
         const { displayName, email } = user;
+
         setFormSuccess({
           displayName: displayName,
           email: email,
@@ -134,10 +133,6 @@ const SignInForm = () => {
       }
     } finally {
       resetForm();
-
-      setTimeout(() => {
-        window.location.href = '/shop';
-      }, 3000);
     }
   };
 
@@ -212,7 +207,14 @@ const SignInForm = () => {
             </div>
           ) : null}
           {formSuccess.message ? (
-            <div className='success' onClick={() => setFormSuccess('')}>
+            <div
+              className='success'
+              onClick={() => {
+                setFormSuccess('');
+                // Temporarily added to remove warnings generated in the signup-form component
+                window.location.href = '/auth';
+              }}
+            >
               <div className='success-container'>
                 <span className='green-text'>{formSuccess.message}</span>
                 <br />

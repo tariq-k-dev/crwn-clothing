@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useContext } from 'react';
 
 import FormInput from '../../components/form-input/form-input.component';
 import Button from '../button/button.component';
@@ -87,14 +87,14 @@ const SignUpForm = () => {
     if (password.length >= 6) {
       setPasswordError(false);
       formValidation.passwordValid = true;
-    } else if (password.length > 4 && password.length < 6) {
+    } else if (password.length > 2 && password.length < 6) {
       setPasswordError(true);
       formValidation.passwordValid = false;
     }
     if (confirmPassword.length >= 6) {
       setConfirmPasswordError(false);
       formValidation.confirmPasswordValid = true;
-    } else if (confirmPassword.length > 4 && confirmPassword.length < 6) {
+    } else if (confirmPassword.length > 2 && confirmPassword.length < 6) {
       setConfirmPasswordError(true);
       formValidation.confirmPasswordValid = false;
     }
@@ -110,11 +110,6 @@ const SignUpForm = () => {
 
     return isValid;
   }, [displayName, email, password, confirmPassword]);
-
-  const resetForm = () => {
-    setFormFields(defaultFormFields);
-    setIsFormValid(false);
-  };
 
   const handleChange = event => {
     const { name, value } = event.target;
@@ -135,7 +130,11 @@ const SignUpForm = () => {
         password
       );
 
-      await createUserDocumentFromAuth({ ...user, displayName });
+      await createUserDocumentFromAuth({
+        ...user,
+        displayName,
+      });
+
       setFormSuccess({
         displayName: displayName,
         email: email,
@@ -150,6 +149,11 @@ const SignUpForm = () => {
     } finally {
       resetForm();
     }
+  };
+
+  const resetForm = () => {
+    setFormFields(defaultFormFields);
+    setIsFormValid(false);
   };
 
   useEffect(() => {

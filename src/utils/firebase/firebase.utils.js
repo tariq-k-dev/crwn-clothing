@@ -5,6 +5,8 @@ import {
   signInWithEmailAndPassword,
   GoogleAuthProvider,
   createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut,
 } from 'firebase/auth';
 import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
 
@@ -50,7 +52,7 @@ export const signInAuthWithEmailAndPassword = async (email, password) => {
     if (docSnap.exists()) {
       const userRecord = docSnap.data();
 
-      return userRecord;
+      return { ...userRecord, uid };
     } else {
       console.log('No such document!');
     }
@@ -64,6 +66,7 @@ export const signInAuthWithEmailAndPassword = async (email, password) => {
 };
 // Firestore DB
 export const db = getFirestore();
+
 export const createUserDocumentFromAuth = async userAuth => {
   if (!userAuth) return;
 
@@ -93,3 +96,8 @@ export const createAuthUserWithEmailAndPassword = async (email, password) => {
 
   return await createUserWithEmailAndPassword(auth, email, password);
 };
+
+export const signOutUser = async () => await signOut(auth);
+
+export const onAuthStateChangedListener = callback =>
+  onAuthStateChanged(auth, callback);
