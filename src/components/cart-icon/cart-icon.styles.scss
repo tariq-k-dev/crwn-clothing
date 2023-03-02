@@ -1,0 +1,23 @@
+.cart-icon-container {
+  background-color: rgba(255, 255, 255, 1);
+  width: 4.5rem;
+  height: 4.5rem;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  .shopping-icon {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+
+  .item-count {
+    position: absolute;
+    color: rgba(47, 53, 66, 1);
+    font-size: 1rem;
+    font-weight: bold;
+    bottom: 0.9rem;
+  }
+}

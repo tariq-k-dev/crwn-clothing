@@ -211,8 +211,7 @@ const SignInForm = () => {
               className='success'
               onClick={() => {
                 setFormSuccess('');
-                // Temporarily added to remove warnings generated in the signup-form component
-                window.location.href = '/auth';
+                window.location.href = '/shop';
               }}
             >
               <div className='success-container'>
