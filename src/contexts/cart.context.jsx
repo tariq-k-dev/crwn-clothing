@@ -29,23 +29,50 @@ export const CartProvider = ({ children }) => {
   const addItemToCart = productToAdd => {
     setCartItems(addCartItem(cartItems, productToAdd));
   };
+  const decreaseItemQuantity = id => {
+    const newCartItems = cartItems.map(cartItem => {
+      if (cartItem.id === id && cartItem.quantity >= 1) {
+        cartItem.quantity -= 1;
+      }
+      return cartItem;
+    });
+
+    setCartItems(newCartItems);
+  };
+  const increaseItemQuantity = id => {
+    const newCartItems = cartItems.map(cartItem => {
+      if (cartItem.id === id && cartItem.quantity < 20) {
+        cartItem.quantity += 1;
+      }
+      return cartItem;
+    });
+
+    setCartItems(newCartItems);
+  };
+  const removeCartItem = id => {
+    const newCartItems = cartItems.filter(cartItem => cartItem.id !== id);
+
+    setCartItems(newCartItems);
+  };
   const value = {
     isCartOpen,
     setIsCartOpen,
     cartItems,
+    setCartItems,
     addItemToCart,
     cartCount,
+    decreaseItemQuantity,
+    increaseItemQuantity,
+    removeCartItem,
   };
 
   useEffect(() => {
-    if (cartItems.length > 0) {
-      const newCartCount = cartItems.reduce(
-        (total, cartItem) => total + cartItem.quantity,
-        0
-      );
+    const newCartCount = cartItems.reduce(
+      (total, cartItem) => total + cartItem.quantity,
+      0
+    );
 
-      setCartCount(newCartCount);
-    }
+    setCartCount(newCartCount);
   }, [cartItems]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
