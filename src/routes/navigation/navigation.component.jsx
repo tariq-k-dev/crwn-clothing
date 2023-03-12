@@ -15,7 +15,7 @@ import './navigation.styles.scss';
 const Navigation = () => {
   const { currentUser } = useContext(UserContext);
   const { isCartOpen, setIsCartOpen } = useContext(CartContext);
-  const toggleCartOpenHandler = () => setIsCartOpen(!isCartOpen);
+  const closeCartOpenHandler = () => setIsCartOpen(false);
 
   return (
     <>
@@ -24,7 +24,7 @@ const Navigation = () => {
           className='logo-container'
           exact='true'
           to='/'
-          onClick={toggleCartOpenHandler}
+          onClick={closeCartOpenHandler}
         >
           <CrwnLogo className='logo' />
         </NavLink>
@@ -33,14 +33,14 @@ const Navigation = () => {
             className='nav-link'
             exact='true'
             to='/'
-            onClick={toggleCartOpenHandler}
+            onClick={closeCartOpenHandler}
           >
             <span className='border-bottom'>HOME</span>
           </NavLink>
           <NavLink
             className='nav-link'
             to='/shop'
-            onClick={toggleCartOpenHandler}
+            onClick={closeCartOpenHandler}
           >
             <span className='border-bottom'>SHOP</span>
           </NavLink>
@@ -52,7 +52,7 @@ const Navigation = () => {
             <NavLink
               className='nav-link'
               to='/auth'
-              onClick={toggleCartOpenHandler}
+              onClick={closeCartOpenHandler}
             >
               <span className='border-bottom'>SIGN IN</span>
             </NavLink>
