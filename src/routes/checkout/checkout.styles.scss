@@ -1,9 +1,9 @@
-main {
+main.checkout-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin: 12rem 5rem 3rem;
+  margin: 12rem 0 3rem;
   width: 100%;
 
   .headings {
@@ -69,5 +69,16 @@ main {
     .remove-item {
       cursor: pointer;
     }
+  }
+
+  .cart-items:nth-last-child(2) {
+    border-bottom: 0.1rem solid gray;
+  }
+
+  .total-price {
+    font-size: 2rem;
+    font-weight: 500;
+    margin-top: 2rem;
+    margin-left: 20%;
   }
 }

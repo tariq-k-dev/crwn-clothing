@@ -1,20 +1,14 @@
 import { useContext } from 'react';
 import { CartContext } from '../../contexts/cart.context';
+import CheckoutItem from '../../components/checkout-item/checkout-item.component';
 import './checkout.styles.scss';
-import { ReactComponent as DecreaseIcon } from '../../assets/minus-square.svg';
-import { ReactComponent as IncreaseIcon } from '../../assets/plus-square.svg';
-import { ReactComponent as RemoveIcon } from '../../assets/remove-box.svg';
 
 const Checkout = () => {
-  const {
-    cartItems,
-    decreaseItemQuantity,
-    increaseItemQuantity,
-    removeCartItem,
-  } = useContext(CartContext);
+  const { cartItems } = useContext(CartContext);
+  let totalPrice = 0;
 
   return (
-    <main>
+    <main className='checkout-container'>
       <div className='headings'>
         <span>Product</span>
         <span>Description</span>
@@ -23,35 +17,14 @@ const Checkout = () => {
         <span>Remove</span>
       </div>
       {cartItems.map(cartItem => {
-        const { id, name, imageUrl, price, quantity } = cartItem;
-        const decreaseProductQuantity = () => decreaseItemQuantity(id);
-        const increaseProductQuantity = () => increaseItemQuantity(id);
-        const removeItemHandler = () => removeCartItem(id);
+        const { id, price, quantity } = cartItem;
+        totalPrice += quantity * price;
 
-        return (
-          <div key={id} className='cart-items'>
-            <span>
-              <img src={imageUrl} alt={name} />
-            </span>
-            <span>{name}</span>
-            <span className='quantity-container'>
-              <DecreaseIcon
-                className='decrease-button'
-                onClick={decreaseProductQuantity}
-              />
-              <span className='quantity'>{quantity}</span>
-              <IncreaseIcon
-                className='increase-button'
-                onClick={increaseProductQuantity}
-              />
-            </span>
-            <span>${(price * quantity).toFixed(2)}</span>
-            <span>
-              <RemoveIcon className='remove-item' onClick={removeItemHandler} />
-            </span>
-          </div>
-        );
+        return <CheckoutItem key={id} cartItem={cartItem} />;
       })}
+      {totalPrice > 0 && (
+        <div className='total-price'>Total: ${totalPrice.toFixed(2)}</div>
+      )}
     </main>
   );
 };

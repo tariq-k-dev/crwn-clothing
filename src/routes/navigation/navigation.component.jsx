@@ -14,19 +14,34 @@ import './navigation.styles.scss';
 
 const Navigation = () => {
   const { currentUser } = useContext(UserContext);
-  const { isCartOpen } = useContext(CartContext);
+  const { isCartOpen, setIsCartOpen } = useContext(CartContext);
+  const toggleCartOpenHandler = () => setIsCartOpen(!isCartOpen);
 
   return (
     <>
       <nav className='navigation'>
-        <NavLink className='logo-container' exact='true' to='/'>
+        <NavLink
+          className='logo-container'
+          exact='true'
+          to='/'
+          onClick={toggleCartOpenHandler}
+        >
           <CrwnLogo className='logo' />
         </NavLink>
         <div className='nav-links-container'>
-          <NavLink className='nav-link' exact='true' to='/'>
+          <NavLink
+            className='nav-link'
+            exact='true'
+            to='/'
+            onClick={toggleCartOpenHandler}
+          >
             <span className='border-bottom'>HOME</span>
           </NavLink>
-          <NavLink className='nav-link' to='/shop'>
+          <NavLink
+            className='nav-link'
+            to='/shop'
+            onClick={toggleCartOpenHandler}
+          >
             <span className='border-bottom'>SHOP</span>
           </NavLink>
           {currentUser ? (
@@ -34,7 +49,11 @@ const Navigation = () => {
               <span className='border-bottom'>SIGN OUT</span>
             </NavLink>
           ) : (
-            <NavLink className='nav-link' to='/auth'>
+            <NavLink
+              className='nav-link'
+              to='/auth'
+              onClick={toggleCartOpenHandler}
+            >
               <span className='border-bottom'>SIGN IN</span>
             </NavLink>
           )}
