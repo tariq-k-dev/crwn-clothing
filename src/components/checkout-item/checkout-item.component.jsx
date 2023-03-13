@@ -9,7 +9,7 @@ const CheckoutItem = ({ cartItem }) => {
   const { decreaseItemQuantity, increaseItemQuantity, removeCartItem } =
     useContext(CartContext);
   const { id, name, imageUrl, price, quantity } = cartItem;
-  const decreaseProductQuantity = () => decreaseItemQuantity(id);
+  const decreaseProductQuantity = () => decreaseItemQuantity(id, quantity);
   const increaseProductQuantity = () => increaseItemQuantity(id);
   const removeItemHandler = () => removeCartItem(id);
 

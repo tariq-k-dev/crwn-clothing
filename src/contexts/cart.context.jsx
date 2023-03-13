@@ -29,11 +29,17 @@ export const CartProvider = ({ children }) => {
   const addItemToCart = productToAdd => {
     setCartItems(addCartItem(cartItems, productToAdd));
   };
-  const decreaseItemQuantity = id => {
+  const decreaseItemQuantity = (id, quantity) => {
+    if (quantity === 1) {
+      removeCartItem(id);
+
+      return;
+    }
     const newCartItems = cartItems.map(cartItem => {
-      if (cartItem.id === id && cartItem.quantity >= 1) {
+      if (cartItem.id === id && cartItem.quantity > 1) {
         cartItem.quantity -= 1;
       }
+
       return cartItem;
     });
 
