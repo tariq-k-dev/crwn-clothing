@@ -4,8 +4,7 @@ import CheckoutItem from '../../components/checkout-item/checkout-item.component
 import './checkout.styles.scss';
 
 const Checkout = () => {
-  const { cartItems } = useContext(CartContext);
-  let totalPrice = 0;
+  const { cartItems, cartTotal } = useContext(CartContext);
 
   return (
     <main className='checkout-container'>
@@ -16,14 +15,11 @@ const Checkout = () => {
         <span>Price</span>
         <span>Remove</span>
       </div>
-      {cartItems.map(cartItem => {
-        const { id, price, quantity } = cartItem;
-        totalPrice += quantity * price;
-
-        return <CheckoutItem key={id} cartItem={cartItem} />;
-      })}
-      {totalPrice > 0 && (
-        <div className='total-price'>Total: ${totalPrice.toFixed(2)}</div>
+      {cartItems.map(cartItem => (
+        <CheckoutItem key={cartItem.id} cartItem={cartItem} />
+      ))}
+      {cartTotal > 0 && (
+        <div className='total-price'>Total: ${cartTotal.toFixed(2)}</div>
       )}
     </main>
   );
